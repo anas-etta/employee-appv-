@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/employees")
-@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", allowCredentials = "true") // Appliquer à toutes les méthodes
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", allowCredentials = "true")
 
 public class EmployeeController {
 
@@ -23,7 +23,7 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    // 🔹 Ajouter un nouvel employé (ADMIN uniquement)
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
@@ -31,7 +31,7 @@ public class EmployeeController {
         return ResponseEntity.ok(savedEmployee);
     }
 
-    // 🔹 Récupérer tous les employés (ADMIN et USER)
+
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<Page<Employee>> getAllEmployees(
@@ -43,7 +43,7 @@ public class EmployeeController {
         return ResponseEntity.ok(employees);
     }
 
-    // 🔹 Récupérer un employé par son ID (ADMIN et USER)
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
@@ -52,7 +52,7 @@ public class EmployeeController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // 🔹 Mettre à jour un employé (ADMIN uniquement)
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
@@ -64,7 +64,7 @@ public class EmployeeController {
         }
     }
 
-    // 🔹 Supprimer un employé (ADMIN uniquement)
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
@@ -72,7 +72,7 @@ public class EmployeeController {
         return ResponseEntity.noContent().build();
     }
 
-    // 🔹 Rechercher des employés par prénom avec pagination (ADMIN et USER)
+
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<Page<Employee>> searchEmployees(

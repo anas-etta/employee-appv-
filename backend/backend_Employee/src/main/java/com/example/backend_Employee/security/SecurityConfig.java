@@ -1,5 +1,6 @@
 package com.example.backend_Employee.security;
 
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +28,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Supprimer l'appel à http.cors() ici
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(GET, "/api/employees/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(POST, "/api/employees").hasRole("ADMIN")
@@ -51,39 +52,48 @@ public class SecurityConfig {
         JwtGrantedAuthoritiesConverter defaultConverter = new JwtGrantedAuthoritiesConverter();
         Collection<GrantedAuthority> authorities = defaultConverter.convert(jwt);
 
+
+        if (authorities == null) {
+            authorities = new ArrayList<>();
+        }
+
+
         List<String> roles = jwt.getClaimAsMap("realm_access") != null
                 ? (List<String>) jwt.getClaimAsMap("realm_access").get("roles")
                 : List.of();
 
+
         List<SimpleGrantedAuthority> roleAuthorities = roles.stream()
                 .map(role -> {
                     if (role.startsWith("ROLE_")) {
-                        return new SimpleGrantedAuthority(role); // Évite le double "ROLE_"
+                        return new SimpleGrantedAuthority(role);
                     } else {
                         return new SimpleGrantedAuthority("ROLE_" + role.toUpperCase());
                     }
                 })
                 .collect(Collectors.toList());
 
+
         authorities.addAll(roleAuthorities);
+
         return authorities;
     }
 
-    // Nouvelle manière de gérer CORS en Spring Security 6.x
+
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:4200"); // Autorise uniquement ton frontend
+        config.addAllowedOrigin("http://localhost:4200");
         config.addAllowedHeader("*");
-        config.addAllowedMethod("*"); // Autorise toutes les méthodes HTTP
+        config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return source;
     }
 
     @Bean
     public CorsConfigurationSource corsSource() {
-        return corsConfigurationSource();  // On applique la configuration CORS ici
+        return corsConfigurationSource();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.backend_Employee.Service;
 
+
 import com.example.backend_Employee.Entities.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,6 @@ public interface EmployeeService {
     Employee updateEmployee(Long id, Employee employee);
     void deleteEmployee(Long id);
 
-    // 🔹 Changer cette méthode pour rechercher par prénom, nom ou email
+
     Page<Employee> searchEmployees(String query, Pageable pageable);
 }
